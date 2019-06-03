@@ -108,7 +108,9 @@ public class RestaurantController {
         System.out.println("acceptToKitchen: "+orderId);
         OrderMeal orderMeal = orderMealService.findById(id);
         String responseFromMailSender =
-                mailServiceImpl.send(orderMeal.getClient().getEmail(), orderAccepted);
+                mailServiceImpl.send(orderMeal.getClient().getEmail(),
+                        orderAccepted,
+                        "Order accepted");
         if(responseFromMailSender.equals("Message was sent")){
             orderMeal.setOrderStatus(OrderStatus.IN_PROCESS);
 

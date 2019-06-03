@@ -54,7 +54,9 @@ public class OrderMealService {
         orderMeal.setDate(new Date());
         orderMealDAO.save(orderMeal);
         String responseFromMailSender =
-                mailServiceImpl.send(restaurant.getEmail(), newOrder);
+                mailServiceImpl.send(restaurant.getEmail(),
+                        newOrder,
+                        "New order in your List");
         if(responseFromMailSender.equals("Message was sent")){
             return new ResponseTransfer("Order was saved successfully");
         }else {

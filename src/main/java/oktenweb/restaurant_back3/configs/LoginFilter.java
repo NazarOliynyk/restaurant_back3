@@ -50,8 +50,6 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
                         Collections.<GrantedAuthority>emptyList()
                 )
         );
-
-
     }
 
     @Override
@@ -68,10 +66,15 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
         res.addHeader("Authorization", "Bearer " + jwtoken);
 
-        User userLogged= (User) userDetailsService.loadUserByUsername(auth.getName());
+        User userLogged= new User();
+        if(auth.getName().equals("admin")){
+            userLogged.setUsername("admin");
+        }else {
+            userLogged = (User) userDetailsService.loadUserByUsername(auth.getName());
+        }
 
         res.addHeader("UserClass", String.valueOf(userLogged.getClass()));
-
         res.addHeader("UserLogged", new ObjectMapper().writeValueAsString(userLogged));
+
     }
 }

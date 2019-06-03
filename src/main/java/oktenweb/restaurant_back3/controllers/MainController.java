@@ -6,7 +6,9 @@ import oktenweb.restaurant_back3.services.MealService;
 import oktenweb.restaurant_back3.services.MenuSectionService;
 import oktenweb.restaurant_back3.services.OrderMealService;
 import oktenweb.restaurant_back3.services.impl.UserServiceImpl;
+import org.hibernate.annotations.Proxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.util.*;
@@ -39,6 +41,13 @@ public class MainController {
         ResponseTransfer response = userServiceImpl.save(client);
         System.out.println("Controller: "+response.getText());
         return response;
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/verification/{jwt}")
+    public String verification(@PathVariable String jwt){
+
+        return userServiceImpl.verification(jwt);
     }
 
     @CrossOrigin(origins = "*")
@@ -101,6 +110,7 @@ public class MainController {
     }
 
     @CrossOrigin(origins = "*")
+    @Transactional
     @PostMapping("/forgotPassword/{id}")
     public ResponseTransfer forgotPassword(@PathVariable("id") int id,
                                            @RequestBody User u){
@@ -108,7 +118,7 @@ public class MainController {
 
         userServiceImpl.setTimeout(() ->{
             System.out.println("Tymeout Works");
-            userServiceImpl.setRandomPassIfNotChanged(id);}, 90000);
+            userServiceImpl.setRandomPassIfNotChanged(id);}, 180000);
         return userServiceImpl.setRandomPass(id);
 
 
@@ -157,26 +167,8 @@ public class MainController {
     @GetMapping("/getAvatars/{id}")
     public List<Avatar>  getAvatars (@PathVariable("id") int id){
 
-        System.out.println("/getAvatars/{id} works" + id);
         return avatarService.findByRestaurantId(id);
     }
-
-    // the following method gives encoded base64 files
-//    @CrossOrigin(origins = "*")
-//    @GetMapping("/getImages/{id}")
-//    public Map<String, String>  getImages
-//            (@PathVariable("id") int id) throws IOException {
-//        System.out.println("id: "+id);
-//        Map<String, String> jsonMap = new HashMap<>();
-//        List<File> files = avatarService.findFilesByRestaurantId(id);
-//        for (File file : files) {
-//            String encodeImage =
-//                    Base64.getEncoder().withoutPadding().
-//                            encodeToString(Files.readAllBytes(file.toPath()));
-//            jsonMap.put("content", encodeImage);
-//        }
-//        return jsonMap;
-//    }
 
     @CrossOrigin(origins = "*")
     @GetMapping("/getMenuSections/{id}")

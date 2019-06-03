@@ -1,5 +1,7 @@
 package oktenweb.restaurant_back3.services.impl;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import oktenweb.restaurant_back3.services.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.Date;
 
 @Service
 @PropertySource("classpath:application.properties")
@@ -25,7 +28,7 @@ public class MailServiceImpl implements MailService {
     @Autowired
     Environment env;
 
-    public String send(String email, String message) {
+    public String send(String email, String message, String subject) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = null;
         try {
@@ -38,7 +41,7 @@ public class MailServiceImpl implements MailService {
             mimeMessage.setFrom(new InternetAddress(env.getProperty("spring.mail.username")));
             helper.setTo(email);
             helper.setText(message,true);
-            helper.setSubject("CONFIRMATION MESSAGE");
+            helper.setSubject(subject);
         } catch (MessagingException e) {
             e.printStackTrace();
             return String.valueOf(e);

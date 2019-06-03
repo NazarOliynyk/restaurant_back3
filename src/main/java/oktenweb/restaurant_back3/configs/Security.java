@@ -59,7 +59,7 @@ public class Security extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/").permitAll() // by default method get
                 .antMatchers(HttpMethod.POST, "/login", "/saveClient", "/saveRestaurant", "/forgotPassword/{id}").permitAll()
-                .antMatchers(HttpMethod.GET,"/getLogins").permitAll()
+                .antMatchers(HttpMethod.GET,"/verification/{jwt}", "/getLogins").permitAll()
                 .anyRequest().authenticated()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .and()

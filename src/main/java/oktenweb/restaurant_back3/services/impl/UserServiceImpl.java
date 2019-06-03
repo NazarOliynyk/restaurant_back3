@@ -1,19 +1,20 @@
 package oktenweb.restaurant_back3.services.impl;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
 import oktenweb.restaurant_back3.dao.UserDAO;
 import oktenweb.restaurant_back3.models.*;
 import oktenweb.restaurant_back3.services.UserService;
+import org.hibernate.annotations.Proxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -35,11 +36,48 @@ public class UserServiceImpl implements UserService {
         } else if(userDAO.existsByEmail(user.getEmail())){
             return new ResponseTransfer("Field email is not unique!");
         }else {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            userDAO.save(user);
-            return new ResponseTransfer("User has been saved successfully.");
+            String jwtoken = Jwts.builder()
+                    .setSubject(user.getEmail())
+                    .signWith(SignatureAlgorithm.HS512, "yes".getBytes())
+                    .setExpiration(new Date(System.currentTimeMillis() + 200000))
+                    .compact();
+            String responseFromMailSender =
+                    mailServiceImpl.send(user.getEmail(),
+                            "http://localhost:8080/verification/" + jwtoken,
+                            "Confirm registration");
+            if(responseFromMailSender.equals("Message was sent")){
+                user.setPassword(passwordEncoder.encode(user.getPassword()));
+                userDAO.save(user);
+                return new ResponseTransfer("Preliminary Registration is completed. Take a look into your email");
+            }else {
+                return new ResponseTransfer(responseFromMailSender);
+            }
         }
     }
+
+    public String verification(String jwt) {
+        String email;
+        try {
+            email = Jwts.parser().
+                    setSigningKey("yes".getBytes()).
+                    parseClaimsJws(jwt).getBody().getSubject();
+
+        }catch (MalformedJwtException e){
+            System.out.println(e.toString());
+            return "Verification failed";
+        }
+        User user = userDAO.findByEmail(email);
+
+        if(user == null){
+            return "Verification failed";
+        }else {
+            user.setEnabled(true);
+            userDAO.save(user);
+            return "Verification successful! Go To Log In page";
+        }
+    }
+
+
 
     public ResponseTransfer update(User user) {
         User userBeforeUpdate = userDAO.getOne(user.getId());
@@ -52,7 +90,7 @@ public class UserServiceImpl implements UserService {
         if(emails.contains(user.getEmail())){
             return new ResponseTransfer("Field email is not unique!");
         }else {
-
+            user.setEnabled(true);
             userDAO.save(user);
             return new ResponseTransfer("User has been updated successfully.");
         }
@@ -64,14 +102,14 @@ public class UserServiceImpl implements UserService {
         String path =
                 "D:\\AngularProjects\\restaurantfrontend2\\src\\assets\\images"+ File.separator;
 
-        User user = userDAO.getOne(id);
+        User user = userDAO.findById(id);
 
         if(user.getClass().equals(Client.class)){
             userDAO.deleteById(id);
             return new ResponseTransfer("User was deleted successfully");
         }else   {
 
-            Restaurant restaurant = (Restaurant) user;
+            Restaurant restaurant = (Restaurant) userDAO.findById(id);
 
           //  List<Avatar> avatars = restaurant.getAvatars();
 
@@ -99,8 +137,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findOneById(Integer id) {
-        return userDAO.getOne(id);
+    public User findOneById(int id) {
+        return userDAO.findById(id);
     }
 
     // beacause  UserService extends UserDetailsService
@@ -123,6 +161,7 @@ public class UserServiceImpl implements UserService {
 
     public ResponseTransfer changePassword(User user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setEnabled(true);
         userDAO.save(user);
         return new ResponseTransfer("Password was changed successfully.");
     }
@@ -155,20 +194,22 @@ public class UserServiceImpl implements UserService {
     }
 
     private String randomPass;
-    private String emailPassChanged = "<div>\n" +
-            "    <a href=\"http://localhost:4200\" target=\"_blank\"> Your password was changed to: " +
-            "</a>" + "</div>";
 
     public ResponseTransfer setRandomPass(int id){
         User user = this.findOneById(id);
-        Random r = new Random (1000);
+        Random r = new Random ();
         int random = r.nextInt(9999);
         randomPass = String.valueOf(random);
         user.setPassword(randomPass);
         System.out.println(random);
         System.out.println(randomPass);
+        String emailPassChanged = "<div>\n" +
+                "    <a href=\"http://localhost:4200\" target=\"_blank\"> Your password was changed to: " +
+                "</a>" + "</div>";
         String responseFromMailSender =
-                mailServiceImpl.send(user.getEmail(), emailPassChanged+randomPass);
+                mailServiceImpl.send(user.getEmail(),
+                        emailPassChanged +randomPass,
+                        "Temporary password");
         if(responseFromMailSender.equals("Message was sent")){
             return this.changePassword(user);
         }else {
@@ -179,7 +220,7 @@ public class UserServiceImpl implements UserService {
     public void setRandomPassIfNotChanged(int id){
         User user = this.findOneById(id);
         if(this.checkPassword(id, randomPass).getText().equals("PASSWORD MATCHES")){
-            Random r = new Random (1000);
+            Random r = new Random ();
             int random = r.nextInt(9999);
             randomPass = String.valueOf(random);
             user.setPassword(randomPass);
