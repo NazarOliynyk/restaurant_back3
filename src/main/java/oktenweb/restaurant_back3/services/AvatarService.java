@@ -1,7 +1,8 @@
 package oktenweb.restaurant_back3.services;
 
-import oktenweb.restaurant_back3.dao.AvatarDAO;
-import oktenweb.restaurant_back3.models.Avatar;
+import oktenweb.restaurant_back3.dao.MealDAO;
+import oktenweb.restaurant_back3.dao.UserDAO;
+import oktenweb.restaurant_back3.models.Meal;
 import oktenweb.restaurant_back3.models.ResponseTransfer;
 import oktenweb.restaurant_back3.models.Restaurant;
 import oktenweb.restaurant_back3.services.impl.UserServiceImpl;
@@ -20,35 +21,19 @@ import java.util.List;
 @Service
 public class AvatarService {
 
+
     @Autowired
-    AvatarDAO avatarDAO;
+    UserDAO userDAO;
     @Autowired
-    UserServiceImpl userServiceImpl;
+    MealDAO mealDAO;
 
-    public List<Avatar> findByRestaurantId(int id){
-        return avatarDAO.findByRestaurantId(id);
-    }
+    private String path =
+            "D:\\Restaurants3\\restaurantsfront3\\src\\assets\\images"+ File.separator;
 
 
-    public List<File> findFilesByRestaurantId(int id){
-        List<Avatar> avatars = avatarDAO.findByRestaurantId(id);
-        List<File> files = new ArrayList<>();
-        for (Avatar avatar : avatars) {
-            File file =  new File("/ava/"+avatar.getImage());
-            files.add( file);
-        }
 
-        return files;
-    }
-
-    //    private String path =  "D:\\FotoSpringRestaurantBackEnd2Rest"+ File.separator;
-    private String path =  "D:\\AngularProjects\\restaurantfrontend2\\src\\assets\\images"+ File.separator;
-
-    // file:///D:/AngularProjects/restaurantfrontend2/src/assets/images/
-
-    public ResponseTransfer saveAvatar
+    public ResponseTransfer saveAvatarToRestaurant
             (int restaurantId, MultipartFile image){
-
 
         try {
             image.transferTo(new File(path + image.getOriginalFilename()));
@@ -56,31 +41,61 @@ public class AvatarService {
             e.printStackTrace();
             return new ResponseTransfer("Failed to add an image");
         }
-        Avatar avatar = new Avatar();
-        Restaurant restaurant = (Restaurant) userServiceImpl.findOneById(restaurantId);
-        avatar.setRestaurant(restaurant);
-        avatar.setImage(image.getOriginalFilename());
-        avatarDAO.save(avatar);
+        Restaurant restaurant = (Restaurant) userDAO.findById(restaurantId);
+        restaurant.setAvatar(image.getOriginalFilename());
+        userDAO.save(restaurant);
         return new ResponseTransfer("Image saved");
     }
 
-//    public ResponseTransfer deleteAvatar(int id){
-//        Avatar avatar = avatarDAO.getOne(id);
-//
-//        Path pathToFile = FileSystems.getDefault().getPath(path + avatar.getImage());
-//        try {
-//            Files.delete(pathToFile);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return new ResponseTransfer("Image was not deleted");
-//        }
-//
-//        Restaurant restaurant = avatar.getRestaurant();
-//        List<Avatar> avatars = restaurant.getAvatars();
-//        avatars.remove(avatar);
-//        restaurant.setAvatars(avatars);
-//        avatarDAO.delete(avatar);
-//        return new ResponseTransfer("Image was deleted");
-//    }
+    public ResponseTransfer saveAvatarToMeal
+            (int mealId, MultipartFile image){
 
+        try {
+            image.transferTo(new File(path + image.getOriginalFilename()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseTransfer("Failed to add an image");
+        }
+        Meal meal = mealDAO.findById(mealId);
+        meal.setAvatar(image.getOriginalFilename());
+        mealDAO.save(meal);
+        return new ResponseTransfer("Image saved");
+    }
+
+    public ResponseTransfer deleteAvatarFromRestaurant(int restaurantId){
+
+        Restaurant restaurant = (Restaurant) userDAO.findById(restaurantId);
+
+        Path pathToFile =
+                FileSystems.getDefault().getPath(path + restaurant.getAvatar());
+        try {
+            Files.delete(pathToFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseTransfer("Image was not deleted");
+        }
+
+        restaurant.setAvatar("");
+        userDAO.save(restaurant);
+        return new ResponseTransfer("Image was deleted");
+    }
+
+    public ResponseTransfer deleteAvatarFromMeal(int mealId){
+
+        Meal meal = mealDAO.findById(mealId);
+
+        Path pathToFile =
+                FileSystems.getDefault().getPath(path + meal.getAvatar());
+        try {
+            Files.delete(pathToFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseTransfer("Image was not deleted");
+        }
+
+        meal.setAvatar("");
+        mealDAO.save(meal);
+        return new ResponseTransfer("Image was deleted");
+    }
 }
+

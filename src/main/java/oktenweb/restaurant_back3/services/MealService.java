@@ -5,6 +5,11 @@ import oktenweb.restaurant_back3.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 @Service
@@ -47,6 +52,19 @@ public class MealService {
         List<Meal> mealsOfMenuSection = menuSection.getMeals();
         mealsOfMenuSection.remove(meal);
         menuSection.setMeals(mealsOfMenuSection);
+
+        if(!meal.getAvatar().equals("")){
+            String path =
+                    "D:\\Restaurants3\\restaurantsfront3\\src\\assets\\images"+ File.separator;
+            Path pathToFile =
+                    FileSystems.getDefault().getPath(path + meal.getAvatar());
+            try {
+                Files.delete(pathToFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return new ResponseTransfer("Image was not deleted");
+            }
+        }
 
         List<OrderMeal> orders = meal.getOrders();
         for (OrderMeal order : orders) {

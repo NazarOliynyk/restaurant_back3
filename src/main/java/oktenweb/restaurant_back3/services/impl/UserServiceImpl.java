@@ -13,6 +13,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,7 +35,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseTransfer save(User user) {
 
-        if (userDAO.existsByUsername(user.getUsername())) {
+        if (user.getUsername().equals("admin") || userDAO.existsByUsername(user.getUsername())) {
             return new ResponseTransfer("User with such login already exists!!");
         } else if(userDAO.existsByEmail(user.getEmail())){
             return new ResponseTransfer("Field email is not unique!");
@@ -99,31 +103,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseTransfer deleteById(int id){
 
-        String path =
-                "D:\\AngularProjects\\restaurantfrontend2\\src\\assets\\images"+ File.separator;
-
         User user = userDAO.findById(id);
 
         if(user.getClass().equals(Client.class)){
             userDAO.deleteById(id);
             return new ResponseTransfer("User was deleted successfully");
         }else   {
-
             Restaurant restaurant = (Restaurant) userDAO.findById(id);
-
-          //  List<Avatar> avatars = restaurant.getAvatars();
-
-//            for (Avatar avatar : avatars) {
-//
-//                Path pathToFile =
-//                        FileSystems.getDefault().getPath(path + avatar.getImage());
-//                try {
-//                    Files.delete(pathToFile);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                    return new ResponseTransfer("Image was not deleted");
-//                }
-//            }
+            if(!restaurant.getAvatar().equals("")){
+                String path =
+                        "D:\\Restaurants3\\restaurantsfront3\\src\\assets\\images"+ File.separator;
+                Path pathToFile =
+                        FileSystems.getDefault().getPath(path + restaurant.getAvatar());
+                try {
+                    Files.delete(pathToFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return new ResponseTransfer("Image was not deleted");
+                }
+            }
             userDAO.deleteById(id);
             return new ResponseTransfer("User was deleted successfully");
         }

@@ -25,13 +25,14 @@ public class Restaurant extends User{
     // String email;
     String phoneNumber;
     String additionalInfo;
+    String avatar = "";
     int restaurantPositiveResponses;
     int restaurantNegativeResponses;
 
 
-    @JsonIgnore
-    @OneToOne(mappedBy = "restaurant")
-    private Avatar avatar;
+//    @JsonIgnore
+//    @OneToOne(mappedBy = "restaurant")
+//    private Avatar avatar;
 
 
     @JsonIgnore

@@ -157,18 +157,6 @@ public class MainController {
         return clients;
     }
 
-    @CrossOrigin(origins = "*")
-    @GetMapping("/getFiles/{id}")
-    public List<File>  getFiles (@PathVariable("id") int id){
-        return avatarService.findFilesByRestaurantId(id);
-    }
-
-    @CrossOrigin(origins = "*")
-    @GetMapping("/getAvatars/{id}")
-    public List<Avatar>  getAvatars (@PathVariable("id") int id){
-
-        return avatarService.findByRestaurantId(id);
-    }
 
     @CrossOrigin(origins = "*")
     @GetMapping("/getMenuSections/{id}")

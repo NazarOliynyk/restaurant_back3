@@ -25,10 +25,7 @@ public class Meal implements Comparable<Meal>{
     String description;
     String quantity;
     double price;
-
-    @JsonIgnore
-    @OneToOne(mappedBy = "meal")
-    private Avatar avatar;
+    String avatar = "";
 
     @ManyToOne(cascade = CascadeType.DETACH,
             fetch = FetchType.LAZY)

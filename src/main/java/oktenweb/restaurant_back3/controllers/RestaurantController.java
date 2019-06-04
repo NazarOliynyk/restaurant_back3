@@ -29,10 +29,6 @@ public class RestaurantController {
     @Autowired
     MailServiceImpl mailServiceImpl;
 
-    private String orderAccepted = "<div>\n" +
-            "    <a href=\"http://localhost:4200/clientOrder\" target=\"_blank\"> Your order is in process now </a>\n" +
-            "</div>";
-
 
     @CrossOrigin(origins = "*")
     @PostMapping("/saveMenuSection/{id}")
@@ -83,23 +79,35 @@ public class RestaurantController {
 
 
     @CrossOrigin(origins = "*")
-    //@PostMapping("/saveAvatar- {xxx}")
-    @PostMapping("/saveAvatar/{xxx}")
-    public ResponseTransfer saveAvatar(@PathVariable("xxx") int id,
+    @PostMapping("/saveAvatarToRestaurant/{xxx}")
+    public ResponseTransfer saveAvatarToRestaurant(@PathVariable("xxx") int id,
                                        @RequestParam("file") MultipartFile image){
-        System.out.println("id: "+id);
-        System.out.println("OriginalFilename: "+image.getOriginalFilename());
 
-        return avatarService.saveAvatar(id, image);
+        return avatarService.saveAvatarToRestaurant(id, image);
+    }
+
+    @CrossOrigin(origins = "*")
+    @PostMapping("/saveAvatarToMeal/{xxx}")
+    public ResponseTransfer saveAvatarToMeal(@PathVariable("xxx") int id,
+                                                   @RequestParam("file") MultipartFile image){
+
+        return avatarService.saveAvatarToMeal(id, image);
     }
 
 
-//    @CrossOrigin(origins = "*")
-//    @DeleteMapping("/deleteAvatar/{id}")
-//    public ResponseTransfer deleteAvatar(@PathVariable int id) {
-//
-//        return avatarService.deleteAvatar(id);
-//    }
+    @CrossOrigin(origins = "*")
+    @DeleteMapping("/deleteAvatarFromRestaurant/{id}")
+    public ResponseTransfer deleteAvatarFromRestaurant(@PathVariable int id) {
+
+        return avatarService.deleteAvatarFromRestaurant(id);
+    }
+
+    @CrossOrigin(origins = "*")
+    @DeleteMapping("/deleteAvatarFromMeal/{id}")
+    public ResponseTransfer deleteAvatarFromMeal(@PathVariable int id) {
+
+        return avatarService.deleteAvatarFromMeal(id);
+    }
 
     @CrossOrigin(origins = "*")
     @PostMapping("/acceptOrderToKitchen/{id}")
@@ -107,6 +115,9 @@ public class RestaurantController {
                                                  @RequestBody int orderId){
         System.out.println("acceptToKitchen: "+orderId);
         OrderMeal orderMeal = orderMealService.findById(id);
+        String orderAccepted = "<div>\n" +
+                "    <a href=\"http://localhost:4200/clientOrder\" target=\"_blank\"> Your order is in process now </a>\n" +
+                "</div>";
         String responseFromMailSender =
                 mailServiceImpl.send(orderMeal.getClient().getEmail(),
                         orderAccepted,
