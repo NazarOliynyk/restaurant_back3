@@ -1,16 +1,14 @@
 package oktenweb.restaurant_back3.controllers;
 
 import oktenweb.restaurant_back3.models.*;
-import oktenweb.restaurant_back3.services.AvatarService;
-import oktenweb.restaurant_back3.services.MealService;
-import oktenweb.restaurant_back3.services.MenuSectionService;
-import oktenweb.restaurant_back3.services.OrderMealService;
+import oktenweb.restaurant_back3.services.*;
 import oktenweb.restaurant_back3.services.impl.MailServiceImpl;
 import oktenweb.restaurant_back3.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -28,7 +26,8 @@ public class RestaurantController {
     OrderMealService orderMealService;
     @Autowired
     MailServiceImpl mailServiceImpl;
-
+    @Autowired
+    RestTemplateService restTemplateService;
 
     @CrossOrigin(origins = "*")
     @PostMapping("/saveMenuSection/{id}")
@@ -107,6 +106,19 @@ public class RestaurantController {
     public ResponseTransfer deleteAvatarFromMeal(@PathVariable int id) {
 
         return avatarService.deleteAvatarFromMeal(id);
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/getRates")
+    public ResponseTransfer getRates(){
+        ResponseTransfer responseTransfer;
+        try {
+            responseTransfer= restTemplateService.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+            responseTransfer = new ResponseTransfer(0, 0, 0);
+        }
+        return responseTransfer;
     }
 
     @CrossOrigin(origins = "*")

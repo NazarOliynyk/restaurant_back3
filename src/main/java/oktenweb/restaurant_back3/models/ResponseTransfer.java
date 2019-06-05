@@ -10,8 +10,21 @@ import lombok.experimental.FieldDefaults;
 @EqualsAndHashCode
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@AllArgsConstructor
+
 public class ResponseTransfer {
 
     String text;
+    double eur;
+    double usd;
+    double pln;
+
+    public ResponseTransfer(String text) {
+        this.text = text;
+    }
+
+    public ResponseTransfer( double eur, double usd, double pln) {
+        this.eur = eur;
+        this.usd = usd;
+        this.pln = pln;
+    }
 }

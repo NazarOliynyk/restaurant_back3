@@ -36,7 +36,7 @@ public class OrderMealService {
     }
 
     public ResponseTransfer saveOrder(int id, List<Integer> ids){
-        Client client = (Client) userDAO.getOne(id);
+        Client client = (Client) userDAO.findById(id);
         List<Meal> meals = new ArrayList<>();
         for (Integer currentid : ids) {
             Meal meal = mealDao.getOne(currentid);

@@ -170,7 +170,7 @@ public class MainController {
     @GetMapping("/getMeals/{id}")
     public List<Meal> getMeals
             (@PathVariable("id") int id){
-        System.out.println("/getMeals/{id}: "+id);
+
         return mealService.findAllByRestaurantId(id);
     }
 

@@ -49,7 +49,8 @@ public class Meal implements Comparable<Meal>{
     @Override
     public int compareTo(Meal o)
     {
-        return this.getMenuSection().getId() - o.getMenuSection().getId();
+
+        return this.getMenuSection().getName().compareTo(o.getMenuSection().getName());
     }
 
 }
