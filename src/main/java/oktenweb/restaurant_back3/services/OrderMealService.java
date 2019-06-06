@@ -24,10 +24,6 @@ public class OrderMealService {
     @Autowired
     MailServiceImpl mailServiceImpl;
 
-    private String newOrder = "<div>\n" +
-            "    <a href=\"http://localhost:4200/restaurantOrder\" target=\"_blank\"> You have just got a new order </a>\n" +
-            "</div>";
-
     public List<OrderMeal> findAllByClientId(int id){
         return orderMealDAO.findAllByClientId(id);
     }
@@ -53,6 +49,9 @@ public class OrderMealService {
         orderMeal.setOrderStatus(OrderStatus.JUST_ORDERED);
         orderMeal.setDate(new Date());
         orderMealDAO.save(orderMeal);
+        String newOrder = "<div>\n" +
+                "    <a href=\"http://localhost:4200/restaurantOrder\" target=\"_blank\"> You have just got a new order </a>\n" +
+                "</div>";
         String responseFromMailSender =
                 mailServiceImpl.send(restaurant.getEmail(),
                         newOrder,

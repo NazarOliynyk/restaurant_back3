@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class MainController {
@@ -141,7 +142,9 @@ public class MainController {
                 restaurants.add((Restaurant) user);
             }
         }
-        return restaurants;
+        return restaurants.stream().
+                sorted(Comparator.comparing(Restaurant::getName).reversed()).
+                collect(Collectors.toList());
     }
 
     @CrossOrigin(origins = "*")
@@ -166,25 +169,34 @@ public class MainController {
         return menuSectionService.findAllByRestaurantId(id);
     }
 
+
     @CrossOrigin(origins = "*")
     @GetMapping("/getMeals/{id}")
     public List<Meal> getMeals
             (@PathVariable("id") int id){
 
-        return mealService.findAllByRestaurantId(id);
+        return mealService.findAllByRestaurantId(id).stream().
+                sorted(Comparator.comparing(Meal::getMsName)).
+                collect(Collectors.toList());
     }
 
     @CrossOrigin(origins = "*")
     @GetMapping("/getClientOrders/{id}")
     public List<OrderMeal> getClientOrders
             (@PathVariable("id") int id){
-        return orderMealService.findAllByClientId(id);
+
+        return orderMealService.findAllByClientId(id).stream().
+              sorted(Comparator.comparing(OrderMeal::getDate).reversed()).
+                collect(Collectors.toList());
     }
 
     @CrossOrigin(origins = "*")
     @GetMapping("/getRestaurantOrders/{id}")
     public List<OrderMeal> getRestaurantOrders
             (@PathVariable("id") int id){
-        return orderMealService.findAllByRestaurantId(id);
+
+        return orderMealService.findAllByRestaurantId(id).stream().
+                sorted(Comparator.comparing(OrderMeal::getDate).reversed()).
+                collect(Collectors.toList());
     }
 }

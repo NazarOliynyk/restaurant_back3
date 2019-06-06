@@ -16,7 +16,7 @@ import java.util.List;
 @EqualsAndHashCode
 @ToString(exclude = {"restaurant", "menuSection"})
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Meal implements Comparable<Meal>{
+public class Meal{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,6 +35,10 @@ public class Meal implements Comparable<Meal>{
             fetch = FetchType.LAZY)
     MenuSection menuSection;
 
+    public String getMsName() {
+        return this.getMenuSection().getName();
+    }
+
     @JsonIgnore
     @ManyToMany(
             cascade = {
@@ -45,12 +49,5 @@ public class Meal implements Comparable<Meal>{
             mappedBy = "meals"
     )
     List<OrderMeal> orders = new ArrayList<>();
-
-    @Override
-    public int compareTo(Meal o)
-    {
-
-        return this.getMenuSection().getName().compareTo(o.getMenuSection().getName());
-    }
 
 }
