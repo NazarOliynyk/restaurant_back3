@@ -44,14 +44,29 @@ public class RestaurantController {
 
         return menuSectionService.deleteMenuSection(id);
     }
+//
+//    @CrossOrigin(origins = "*")
+//    @PostMapping("/saveMeal/{id}")
+//    public ResponseTransfer saveMeal( @PathVariable("id") int id,
+//                                      @RequestBody Meal meal) {
+//        Restaurant restaurant = (Restaurant) userServiceImpl.findOneById(id);
+//        String name = meal.getMenuSection().getName();
+//        MenuSection menuSection = menuSectionService.findByNameAndRestaurant(name, restaurant);
+//        meal.setMenuSection(menuSection);
+//        meal.setRestaurant(restaurant);
+//        return mealService.saveMeal(meal);
+//    }
+
 
     @CrossOrigin(origins = "*")
     @PostMapping("/saveMeal/{id}")
     public ResponseTransfer saveMeal( @PathVariable("id") int id,
                                       @RequestBody Meal meal) {
-        Restaurant restaurant = (Restaurant) userServiceImpl.findOneById(id);
-        String name = meal.getMenuSection().getName();
-        MenuSection menuSection = menuSectionService.findByNameAndRestaurant(name, restaurant);
+//        Restaurant restaurant = (Restaurant) userServiceImpl.findOneById(id);
+//        String name = meal.getMenuSection().getName();
+
+        MenuSection menuSection = menuSectionService.findById(id);
+        Restaurant restaurant = menuSection.getRestaurant();
         meal.setMenuSection(menuSection);
         meal.setRestaurant(restaurant);
         return mealService.saveMeal(meal);
