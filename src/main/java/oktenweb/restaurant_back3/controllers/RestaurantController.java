@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 public class RestaurantController {
@@ -44,26 +43,11 @@ public class RestaurantController {
 
         return menuSectionService.deleteMenuSection(id);
     }
-//
-//    @CrossOrigin(origins = "*")
-//    @PostMapping("/saveMeal/{id}")
-//    public ResponseTransfer saveMeal( @PathVariable("id") int id,
-//                                      @RequestBody Meal meal) {
-//        Restaurant restaurant = (Restaurant) userServiceImpl.findOneById(id);
-//        String name = meal.getMenuSection().getName();
-//        MenuSection menuSection = menuSectionService.findByNameAndRestaurant(name, restaurant);
-//        meal.setMenuSection(menuSection);
-//        meal.setRestaurant(restaurant);
-//        return mealService.saveMeal(meal);
-//    }
-
 
     @CrossOrigin(origins = "*")
     @PostMapping("/saveMeal/{id}")
     public ResponseTransfer saveMeal( @PathVariable("id") int id,
                                       @RequestBody Meal meal) {
-//        Restaurant restaurant = (Restaurant) userServiceImpl.findOneById(id);
-//        String name = meal.getMenuSection().getName();
 
         MenuSection menuSection = menuSectionService.findById(id);
         Restaurant restaurant = menuSection.getRestaurant();
@@ -72,17 +56,6 @@ public class RestaurantController {
         return mealService.saveMeal(meal);
     }
 
-//    @CrossOrigin(origins = "*")
-//    @PostMapping("/updateMeal/{id}")
-//    public ResponseTransfer updateMeal( @PathVariable("id") int id,
-//                                      @RequestBody Meal meal) {
-//        Restaurant restaurant = (Restaurant) userServiceImpl.findOneById(id);
-//        String name = meal.getMenuSection().getName();
-//        MenuSection menuSection = menuSectionService.findByNameAndRestaurant(name, restaurant);
-//        meal.setMenuSection(menuSection);
-//        meal.setRestaurant(restaurant);
-//        return mealService.saveMeal(meal);
-//    }
 
     @CrossOrigin(origins = "*")
     @DeleteMapping("/deleteMeal/{id}")

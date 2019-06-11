@@ -165,7 +165,6 @@ public class MainController {
     @GetMapping("/getMenuSections/{id}")
     public List<MenuSection>  getMenuSections
             (@PathVariable("id") int id){
-        System.out.println("id: "+id);
         return menuSectionService.findAllByRestaurantId(id);
     }
 
