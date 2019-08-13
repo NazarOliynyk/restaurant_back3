@@ -5,6 +5,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import oktenweb.restaurant_back3.dao.UserDAO;
 import oktenweb.restaurant_back3.models.*;
+import oktenweb.restaurant_back3.services.OrderMealService;
 import oktenweb.restaurant_back3.services.UserService;
 import org.hibernate.annotations.Proxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,8 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     MailServiceImpl mailServiceImpl;
+    @Autowired
+    OrderMealService orderMealService;
 
     @Override
     public ResponseTransfer save(User user) {
@@ -100,33 +103,79 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
-    public ResponseTransfer deleteById(int id){
+//
+//    @Override
+//    public ResponseTransfer deleteById(int id){
+//
+//        User user = userDAO.findById(id);
+//
+//        if(user.getClass().equals(Client.class)){
+//            userDAO.deleteById(id);
+//            return new ResponseTransfer("User was deleted successfully");
+//        }else   {
+//            Restaurant restaurant = (Restaurant) userDAO.findById(id);
+//            if(!restaurant.getAvatar().equals("")){
+//                String path =
+//                        "D:\\Restaurants3\\restaurantsfront3\\src\\assets\\images"+ File.separator;
+//                Path pathToFile =
+//                        FileSystems.getDefault().getPath(path + restaurant.getAvatar());
+//                try {
+//                    Files.delete(pathToFile);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                    return new ResponseTransfer("Image was not deleted");
+//                }
+//            }
+//            userDAO.deleteById(id);
+//            return new ResponseTransfer("User was deleted successfully");
+//        }
+//
+//    }
 
-        User user = userDAO.findById(id);
+@Override
+public ResponseTransfer deleteById(int id){
 
-        if(user.getClass().equals(Client.class)){
-            userDAO.deleteById(id);
-            return new ResponseTransfer("User was deleted successfully");
-        }else   {
-            Restaurant restaurant = (Restaurant) userDAO.findById(id);
-            if(!restaurant.getAvatar().equals("")){
-                String path =
-                        "D:\\Restaurants3\\restaurantsfront3\\src\\assets\\images"+ File.separator;
-                Path pathToFile =
-                        FileSystems.getDefault().getPath(path + restaurant.getAvatar());
-                try {
-                    Files.delete(pathToFile);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return new ResponseTransfer("Image was not deleted");
-                }
+    User user = userDAO.findById(id);
+
+    if(user.getClass().equals(Client.class)){
+
+        List<OrderMeal> orderMeals = orderMealService.findAllByClientId(id);
+        List<Restaurant> restaurants = new ArrayList<>();
+
+        orderMeals.forEach(orderMeal -> restaurants.add(orderMeal.getRestaurant()));
+
+        orderMeals.forEach(om -> orderMealService.deleteOrder(om));
+
+        userDAO.deleteById(id);
+        restaurants.forEach(restaurant -> orderMealService.recountRestaurantResponses(restaurant));
+        return new ResponseTransfer("User was deleted successfully");
+
+    }else   {
+        Restaurant restaurant = (Restaurant) userDAO.findById(id);
+        List<OrderMeal> orderMeals = orderMealService.findAllByRestaurantId(id);
+        List<Client> clients = new ArrayList<>();
+        if(!restaurant.getAvatar().equals("")){
+            String path =
+                    "D:\\Restaurants3\\restaurantsfront3\\src\\static\\images"+ File.separator;
+            Path pathToFile =
+                    FileSystems.getDefault().getPath(path + restaurant.getAvatar());
+            try {
+                Files.delete(pathToFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return new ResponseTransfer("Image was not deleted");
             }
-            userDAO.deleteById(id);
-            return new ResponseTransfer("User was deleted successfully");
         }
+        orderMeals.forEach(orderMeal -> clients.add(orderMeal.getClient()));
+        orderMeals.forEach(om -> orderMealService.deleteOrder(om));
 
+        userDAO.deleteById(id);
+        clients.forEach(client -> orderMealService.recountClientResponses(client));
+
+        return new ResponseTransfer("User was deleted successfully");
     }
+
+}
 
 
     @Override

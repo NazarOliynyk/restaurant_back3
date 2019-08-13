@@ -33,8 +33,6 @@ public class RequestProcessingJWTFilter extends GenericFilterBean {
                     .parseClaimsJws(token.replace("Bearer", ""))
                     .getBody()
                     .getSubject();
-            System.out.println(user + "!!!!!!!!!!!---!!!!!");
-
             //after parse of token we create Authentication object
             authentication = new UsernamePasswordAuthenticationToken(Collections.emptyList(), user, null);
 

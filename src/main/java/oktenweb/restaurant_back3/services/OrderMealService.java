@@ -134,6 +134,11 @@ public class OrderMealService {
         }
     }
 
+    public void deleteOrder(OrderMeal orderMeal){
+        deleteOrderFromEverywhere(orderMeal);
+        orderMealDAO.delete(orderMeal);
+    }
+
     public ResponseTransfer cancelOrderByRestaurant(int id, String reasonOfCancelation){
 
         OrderMeal orderMeal = orderMealDAO.getOne(id);
@@ -164,8 +169,8 @@ public class OrderMealService {
         return new ResponseTransfer("Order status - Served");
     }
 
-    private void recountClientResponses(OrderMeal order){
-        Client client = order.getClient();
+    public void recountClientResponses(Client client){
+       // Client client = order.getClient();
         List<OrderMeal> negative = new ArrayList<>();
         List<OrderMeal> positive = new ArrayList<>();
         for (OrderMeal ord: client.getOrders()) {
@@ -174,15 +179,14 @@ public class OrderMealService {
             }else if(ord.getResponseFromRestaurant().equals(TypeOfResponse.POSITIVE)){
                 positive.add(ord);}
         }
-        System.out.println("CLIENT negative.size(): "+negative.size());
-        System.out.println("CLIENT positive.size(): "+positive.size());
+
         client.setClientNegativeResponses(negative.size());
         client.setClientPositiveResponses(positive.size());
         userDAO.save(client);
     }
 
-    private void recountRestaurantResponses(OrderMeal order){
-        Restaurant restaurant = order.getRestaurant();
+    public void recountRestaurantResponses(Restaurant restaurant){
+
         List<OrderMeal> negative = new ArrayList<>();
         List<OrderMeal> positive = new ArrayList<>();
         for (OrderMeal ord: restaurant.getOrders()) {
@@ -191,8 +195,7 @@ public class OrderMealService {
             }else if(ord.getResponseFromClient().equals(TypeOfResponse.POSITIVE)) {
                 positive.add(ord);}
         }
-        System.out.println("RESTAURANT negative.size(): "+negative.size());
-        System.out.println("RESTAURANT positive.size(): "+positive.size());
+
         restaurant.setRestaurantNegativeResponses(negative.size());
         restaurant.setRestaurantPositiveResponses(positive.size());
         userDAO.save(restaurant);
@@ -204,7 +207,7 @@ public class OrderMealService {
 
             orderMeal.setDescriptionFromClient(descriptionFromClient);
             orderMeal.setResponseFromClient(TypeOfResponse.NEGATIVE);
-            recountRestaurantResponses(orderMeal);
+            recountRestaurantResponses(orderMeal.getRestaurant());
             orderMealDAO.save(orderMeal);
             return new ResponseTransfer("Response changed to negative");
 
@@ -219,7 +222,7 @@ public class OrderMealService {
 
             orderMeal.setDescriptionFromClient(descriptionFromClient);
             orderMeal.setResponseFromClient(TypeOfResponse.POSITIVE);
-            recountRestaurantResponses(orderMeal);
+            recountRestaurantResponses(orderMeal.getRestaurant());
             orderMealDAO.save(orderMeal);
             return new ResponseTransfer("Response changed to positive");
         }else {
@@ -234,7 +237,7 @@ public class OrderMealService {
 
         orderMeal.setDescriptionFromRestaurant(descriptionFromRestaurant);
         orderMeal.setResponseFromRestaurant(TypeOfResponse.NEGATIVE);
-        recountClientResponses(orderMeal);
+        recountClientResponses(orderMeal.getClient());
         orderMealDAO.save(orderMeal);
         return new ResponseTransfer("Response changed to negative");
     }
@@ -245,7 +248,7 @@ public class OrderMealService {
 
         orderMeal.setDescriptionFromRestaurant(descriptionFromRestaurant);
         orderMeal.setResponseFromRestaurant(TypeOfResponse.POSITIVE);
-        recountClientResponses(orderMeal);
+        recountClientResponses(orderMeal.getClient());
         orderMealDAO.save(orderMeal);
         return new ResponseTransfer("Response changed to positive");
     }
