@@ -228,7 +228,7 @@ public ResponseTransfer deleteById(int id){
 
     // https://stackoverflow.com/questions/4044726/how-to-set-a-timer-in-java?noredirect=1&lq=1
     // https://stackoverflow.com/questions/26311470/what-is-the-equivalent-of-javascript-settimeout-in-java
-    public void setTimeout(Runnable runnable, int delay){
+    public synchronized void setTimeout(Runnable runnable, int delay){
         new Thread(() -> {
             try {
                 Thread.sleep(delay);
@@ -245,11 +245,10 @@ public ResponseTransfer deleteById(int id){
     public ResponseTransfer setRandomPass(int id){
         User user = this.findOneById(id);
         Random r = new Random ();
-        int random = r.nextInt(9999);
+        int random = 1000+ r.nextInt(9000);
         randomPass = String.valueOf(random);
         user.setPassword(randomPass);
-        System.out.println(random);
-        System.out.println(randomPass);
+
         String emailPassChanged = "<div>\n" +
                 "    <a href=\"http://localhost:4200\" target=\"_blank\"> Your password was changed to: " +
                 "</a>" + "</div>";
@@ -266,10 +265,13 @@ public ResponseTransfer deleteById(int id){
 
     public void setRandomPassIfNotChanged(int id){
         User user = this.findOneById(id);
-        if(this.checkPassword(id, randomPass).getText().equals("PASSWORD MATCHES")){
+
+        if(passwordEncoder.matches(randomPass, user.getPassword())){
+            System.out.println("setRandomPassIfNotChanged works!");
             Random r = new Random ();
             int random = r.nextInt(9999);
             randomPass = String.valueOf(random);
+
             user.setPassword(randomPass);
             this.changePassword(user);
         }
