@@ -10,6 +10,7 @@ import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.*;
 
+import java.io.File;
 import java.util.List;
 
 @Configuration
@@ -48,6 +49,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry resourceHandlerRegistry) {
 
+        String pathToFolder =
+                System.getProperty("user.home") + File.separator +
+                        "Restaurant3_images" + File.separator;
+        resourceHandlerRegistry.addResourceHandler("/ava/**").
+                addResourceLocations("file://" + pathToFolder);
     }
 
     @Override

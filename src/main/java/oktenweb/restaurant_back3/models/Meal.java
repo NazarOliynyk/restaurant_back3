@@ -25,7 +25,7 @@ public class Meal{
     String description;
     String quantity;
     double price;
-    String avatar = "";
+    String avatar = "DefaultMeal.jpg";
 
     @ManyToOne(cascade = CascadeType.DETACH,
             fetch = FetchType.LAZY)

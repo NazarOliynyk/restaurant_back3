@@ -17,6 +17,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
@@ -39,8 +40,6 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
         User user = new ObjectMapper()
                 .readValue(httpServletRequest.getInputStream(), User.class);
-
-        System.out.println(user);
 
         return getAuthenticationManager().authenticate(
                 new UsernamePasswordAuthenticationToken(

@@ -27,10 +27,12 @@ public class AvatarService {
     @Autowired
     MealDAO mealDAO;
 
+//    private String path =
+//            "D:\\Restaurants3\\restaurantsfront3\\src\\assets\\images"+ File.separator;
+
     private String path =
-            "D:\\Restaurants3\\restaurantsfront3\\src\\assets\\images"+ File.separator;
-
-
+            System.getProperty("user.home") + File.separator +
+                    "Restaurant3_images" + File.separator;
 
     public ResponseTransfer saveAvatarToRestaurant
             (int restaurantId, MultipartFile image){

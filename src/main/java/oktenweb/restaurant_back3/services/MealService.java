@@ -54,8 +54,11 @@ public class MealService {
         menuSection.setMeals(mealsOfMenuSection);
 
         if(!meal.getAvatar().equals("")){
+//            String path =
+//                    "D:\\Restaurants3\\restaurantsfront3\\src\\assets\\images"+ File.separator;
             String path =
-                    "D:\\Restaurants3\\restaurantsfront3\\src\\assets\\images"+ File.separator;
+                    System.getProperty("user.home") + File.separator +
+                            "Restaurant3_images" + File.separator;
             Path pathToFile =
                     FileSystems.getDefault().getPath(path + meal.getAvatar());
             try {
