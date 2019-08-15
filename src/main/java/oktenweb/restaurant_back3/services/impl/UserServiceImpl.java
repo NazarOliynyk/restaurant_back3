@@ -50,7 +50,8 @@ public class UserServiceImpl implements UserService {
                     .compact();
             String responseFromMailSender =
                     mailServiceImpl.send(user.getEmail(),
-                            "http://localhost:8080/verification/" + jwtoken,
+                            "http://ec2-18-222-130-33.us-east-2.compute.amazonaws.com:8080/verification/" + jwtoken,
+//                            "http://localhost:8080/verification/" + jwtoken,
                             "Confirm registration");
             if(responseFromMailSender.equals("Message was sent")){
                 user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -103,34 +104,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-//
-//    @Override
-//    public ResponseTransfer deleteById(int id){
-//
-//        User user = userDAO.findById(id);
-//
-//        if(user.getClass().equals(Client.class)){
-//            userDAO.deleteById(id);
-//            return new ResponseTransfer("User was deleted successfully");
-//        }else   {
-//            Restaurant restaurant = (Restaurant) userDAO.findById(id);
-//            if(!restaurant.getAvatar().equals("")){
-//                String path =
-//                        "D:\\Restaurants3\\restaurantsfront3\\src\\assets\\images"+ File.separator;
-//                Path pathToFile =
-//                        FileSystems.getDefault().getPath(path + restaurant.getAvatar());
-//                try {
-//                    Files.delete(pathToFile);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                    return new ResponseTransfer("Image was not deleted");
-//                }
-//            }
-//            userDAO.deleteById(id);
-//            return new ResponseTransfer("User was deleted successfully");
-//        }
-//
-//    }
 
 @Override
 public ResponseTransfer deleteById(int id){
@@ -252,8 +225,11 @@ public ResponseTransfer deleteById(int id){
         randomPass = String.valueOf(random);
         user.setPassword(randomPass);
 
+//        String emailPassChanged = "<div>\n" +
+//                "    <a href=\"http://localhost:4200\" target=\"_blank\"> Your password was changed to: " +
+//                "</a>" + "</div>";
         String emailPassChanged = "<div>\n" +
-                "    <a href=\"http://localhost:4200\" target=\"_blank\"> Your password was changed to: " +
+                "    <a href=\"http://ec2-18-222-130-33.us-east-2.compute.amazonaws.com:8080\" target=\"_blank\"> Your password was changed to: " +
                 "</a>" + "</div>";
         String responseFromMailSender =
                 mailServiceImpl.send(user.getEmail(),

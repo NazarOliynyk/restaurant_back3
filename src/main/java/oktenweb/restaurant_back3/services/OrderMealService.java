@@ -49,8 +49,12 @@ public class OrderMealService {
         orderMeal.setOrderStatus(OrderStatus.JUST_ORDERED);
         orderMeal.setDate(new Date());
         orderMealDAO.save(orderMeal);
+//        String newOrder = "<div>\n" +
+//                "    <a href=\"http://localhost:4200/restaurantOrder\" target=\"_blank\"> You have just got a new order </a>\n" +
+//                "</div>";
+
         String newOrder = "<div>\n" +
-                "    <a href=\"http://localhost:4200/restaurantOrder\" target=\"_blank\"> You have just got a new order </a>\n" +
+                "    <a href=\"http://ec2-18-222-130-33.us-east-2.compute.amazonaws.com:8080/restaurantOrder\" target=\"_blank\"> You have just got a new order </a>\n" +
                 "</div>";
         String responseFromMailSender =
                 mailServiceImpl.send(restaurant.getEmail(),

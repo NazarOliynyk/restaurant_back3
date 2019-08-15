@@ -53,7 +53,7 @@ public class WebConfig implements WebMvcConfigurer {
                 System.getProperty("user.home") + File.separator +
                         "Restaurant3_images" + File.separator;
         resourceHandlerRegistry.addResourceHandler("/ava/**").
-                addResourceLocations("file://" + pathToFolder);
+                addResourceLocations("file:///" + pathToFolder);
     }
 
     @Override

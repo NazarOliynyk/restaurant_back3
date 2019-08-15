@@ -60,6 +60,11 @@ public class Security extends WebSecurityConfigurerAdapter {
                 .antMatchers("/").permitAll() // by default method get
                 .antMatchers(HttpMethod.POST, "/login", "/saveClient", "/saveRestaurant", "/forgotPassword/{id}").permitAll()
                 .antMatchers(HttpMethod.GET,"/verification/{jwt}", "/getLogins").permitAll()
+                .antMatchers("/*.ico").permitAll()
+                .antMatchers("/*.js").permitAll()
+                .antMatchers("/*.jpeg").permitAll()
+                .antMatchers("/home/ubuntu/**").permitAll()
+                .antMatchers("/assets/images/**").permitAll()
                 .anyRequest().authenticated()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .and()
