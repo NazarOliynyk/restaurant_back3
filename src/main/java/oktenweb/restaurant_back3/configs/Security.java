@@ -63,8 +63,9 @@ public class Security extends WebSecurityConfigurerAdapter {
                 .antMatchers("/*.ico").permitAll()
                 .antMatchers("/*.js").permitAll()
                 .antMatchers("/*.jpeg").permitAll()
-                .antMatchers("/home/ubuntu/**").permitAll()
+                .antMatchers("/home/ubuntu/Restaurant3_images/**").permitAll()
                 .antMatchers("/assets/images/**").permitAll()
+                .antMatchers("/ava/**").permitAll()
                 .anyRequest().authenticated()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .and()
@@ -76,7 +77,8 @@ public class Security extends WebSecurityConfigurerAdapter {
     @Bean
     CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200")); // allows to ask our server from this url
+//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200")); // allows to ask our server from this url
+        configuration.setAllowedOrigins(Arrays.asList("*"));
         configuration.addAllowedHeader("*");
         configuration.setAllowedMethods(Arrays.asList(
                 HttpMethod.GET.name(),
