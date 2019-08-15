@@ -155,8 +155,13 @@ public ResponseTransfer deleteById(int id){
         List<OrderMeal> orderMeals = orderMealService.findAllByRestaurantId(id);
         List<Client> clients = new ArrayList<>();
         if(!restaurant.getAvatar().equals("")){
+//            String path =
+//                    "D:\\Restaurants3\\restaurantsfront3\\src\\static\\images"+ File.separator;
+
             String path =
-                    "D:\\Restaurants3\\restaurantsfront3\\src\\static\\images"+ File.separator;
+                    System.getProperty("user.home") + File.separator +
+                            "Restaurant3_images" + File.separator;
+
             Path pathToFile =
                     FileSystems.getDefault().getPath(path + restaurant.getAvatar());
             try {
@@ -226,8 +231,6 @@ public ResponseTransfer deleteById(int id){
         return logins;
     }
 
-    // https://stackoverflow.com/questions/4044726/how-to-set-a-timer-in-java?noredirect=1&lq=1
-    // https://stackoverflow.com/questions/26311470/what-is-the-equivalent-of-javascript-settimeout-in-java
     public synchronized void setTimeout(Runnable runnable, int delay){
         new Thread(() -> {
             try {
@@ -267,7 +270,7 @@ public ResponseTransfer deleteById(int id){
         User user = this.findOneById(id);
 
         if(passwordEncoder.matches(randomPass, user.getPassword())){
-            System.out.println("setRandomPassIfNotChanged works!");
+
             Random r = new Random ();
             int random = r.nextInt(9999);
             randomPass = String.valueOf(random);
