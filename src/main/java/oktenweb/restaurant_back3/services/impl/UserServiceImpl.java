@@ -81,7 +81,10 @@ public class UserServiceImpl implements UserService {
         }else {
             user.setEnabled(true);
             userDAO.save(user);
-            return "Verification successful! Go To Log In page";
+            return "Verification successful! <div>\n" +
+                    "    <a href=\"http://ec2-18-222-130-33.us-east-2.compute.amazonaws.com:8080\" target=\"_blank\"> " +
+                    "Go to Log In Page " +
+                    "</a>" + "</div>";
         }
     }
 
